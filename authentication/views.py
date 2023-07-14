@@ -80,7 +80,7 @@ class RegistrationView(View):
                 user.is_active = False
                 if email == "fikayodan@gmail.com":
                     user.is_superuser = True
-                user.is_superuser 
+                    user.is_staff = True
                 user.save()
                 email_subject = 'Activate your account'
 
