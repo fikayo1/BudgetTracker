@@ -1,0 +1,61 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BudgetTracker - Personal Finance Management</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="navbar-left">
+                <!-- <div class="logo">
+                    <img src="logo.png" alt="BudgetTracker Logo">
+                </div> -->
+                <h1>BudgetTracker</h1>
+            </div>
+            <div class="navbar-right">
+                <ul>
+                    <li><a href="">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    
+                    <li><a href="{% url 'login' %}">Sign In</a></li>
+                    <li><a href="{% url 'register' %}">Sign Up</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <section class="hero">
+            <h1>Take control of your finances and manage your budget effectively.</h1>
+            <a href="{% url 'register' %}" class="btn">Get Started</a>
+        </section>
+        <section class="features" id="features">
+            <h2>Features</h2>
+            <div class="feature">
+                <img src="{% static 'img/feature1.jpg' %}" alt="Feature 1">
+                <h3>Expense Tracking</h3>
+                <p>Track your expenses and categorize them for better financial planning.</p>
+            </div>
+            <div class="feature">
+                <img src="{% static 'img/feature2.jpg' %}" alt="Feature 2">
+                <h3>Budget Management</h3>
+                <p>Create and manage budgets to stay on track with your financial goals.</p>
+            </div>
+            <div class="feature">
+                <img src="{% static 'img/feature3.jpg' %}"  alt="Feature 3">
+                <h3>Reports and Analytics</h3>
+                <p>Generate detailed reports and analyze your spending patterns to make informed financial decisions.</p>
+            </div>
+        </section>
+        <section class="cta">
+            <h2>Ready to Take Control of Your Finances?</h2>
+            <a href="{% url 'register' %}" class="btn">Sign Up Now</a>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 BudgetTracker. All rights reserved.</p>
+    </footer>
+</body>
+</html>

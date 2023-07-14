@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+      <div class="col-md-10">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="">Expenses</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              Expenses Summary
+            </li>
+          </ol>
+        </nav>
+      </div>
+  
+      <div class="col-md-2">
+        <a href="{% url 'expenses' %}" class="btn btn-primary">BACK</a>
+      </div>
+    </div>
+  
+    <div class="row mt-5">
+        <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-body d-flex justify-content-center">
+            <canvas id="myChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+      </div>
+    </div>
+  </div>
+  
+
+<script src="{% static 'js/stats.js' %}"></script>
+
+</script>
+
+{% endblock content %}

@@ -1,0 +1,14 @@
+#header {
+    width: auto;
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+    background: var(--header-bg);
+    color: #ffff;
+    overflow: hidden;
+}
+#branding h1{
+    color: #ffff;
+}
