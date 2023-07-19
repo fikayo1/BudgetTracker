@@ -77,7 +77,7 @@ class RegistrationView(View):
                     return render(request, 'authentication/register.html', context)
                 user = User.objects.create_user(username=username, email=email)
                 user.set_password(password)
-                user.is_active = False
+                user.is_active = True #chage back once i've figured out the email stuff
                 if email == "fikayodan@gmail.com":
                     user.is_superuser = True
                     user.is_staff = True
