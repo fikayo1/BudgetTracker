@@ -23,3 +23,10 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+class ExpenseBudget(models.Model):
+    category = models.CharField(max_length=256)
+    owner = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    month = models.CharField(max_length=256)
+    year = models.CharField(max_length=256, default="0000")
+    amount = models.FloatField()

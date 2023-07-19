@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Source, UserIncome
+from userincome.models import IncomeBudget
 from django.core.paginator import Paginator
 from userpreferences.models import UserPreference
 from django.contrib.auth.decorators import login_required
@@ -9,16 +10,23 @@ from django.http import JsonResponse, HttpResponse
 import datetime
 import csv
 import xlwt
+from django.db.models import Sum
+
 
 # Create your views here.
 @login_required(login_url='/authentication/login')
 def index(request):
     sources = Source.objects.all()
     income = UserIncome.objects.filter(owner=request.user)
-    paginator = Paginator(income, 2)
+    paginator = Paginator(income, 5)
     page_number = request.GET.get('page')
     page_obj = Paginator.get_page(paginator,page_number)
-    currency = UserPreference.objects.get(user=request.user).currency
+
+    try:
+        currency = UserPreference.objects.get(user=request.user).currency
+    except:
+        currency = "AED: United Arab Emirates Dirham"
+
 
     context = {
         "income": income,
@@ -124,36 +132,46 @@ def search_income(request):
         return JsonResponse(list(data), safe=False)
 
 
-def income_source_summary(request):
-    todays_date = datetime.date.today()
-    six_months_ago = todays_date - datetime.timedelta(days = 30*6)
+def income_source_summary(request, month, year):
+    year = int(year)
+    month = int(month)
+    # Calculate the start and end dates of the selected month
+    start_date = datetime.date(year, month, 1)
+    if month == 12:
+        end_date = datetime.date(year + 1, 1, 1)
+    else:
+        end_date = datetime.date(year, month + 1, 1)
 
-    incomes = UserIncome.objects.filter(owner=request.user, date__gte=six_months_ago, date__lte=todays_date)
+    incomes = UserIncome.objects.filter(owner=request.user, date__gte=start_date, date__lte=end_date)
 
     finalrep = {}
 
-    def get_source(income):
-        return income.source
+    source_list = list(set(incomes.values_list("source", flat=True)))  # Get distinct categories
+    
 
-    source_list = list(set(map(get_source, incomes)))
+    for source in source_list:
+        amount_earned = incomes.filter(source=source).aggregate(Sum("amount"))["amount__sum"] or 0
+        budget = IncomeBudget.objects.filter(owner=request.user, source=source, month=month, year=year).first()
+        budget_amount = budget.amount if budget else 0
 
-    def get_source_amount(source):
-        amount = 0
-        filtered_by_source = incomes.filter(source=source)
-
-        for item in filtered_by_source:
-            amount += item.amount
-        return amount
-
-    for i in incomes:
-        for j in source_list:
-            finalrep[j] = get_source_amount(j)
-
+        finalrep[source] = {
+            "amount_earned": amount_earned,
+            "budget": budget_amount,
+        }
+    print(finalrep)
     return JsonResponse({"income_source_data":finalrep}, safe=False)
 
 
 def stats_view(request):
-    return render(request, 'income/stats.html')
+    income = UserIncome.objects.filter(owner = request.user)
+    total_income = income.aggregate(Sum('amount'))
+    year_range = range(2000, 2100)
+
+    context = {
+        "total_income": total_income,
+        "year_range": year_range
+    }
+    return render(request, 'income/stats.html', context)
 
 
 def export_csv(request):

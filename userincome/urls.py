@@ -10,5 +10,5 @@ urlpatterns = [
     path('stats', views.stats_view, name="in-stats"),
     path('export-csv', views.export_csv, name="export-csv"),
     path('export-excel', views.export_excel, name="export-excel"),
-    path('income_source_summary', views.income_source_summary, name="income_source_summary"),
+    path('income_source_summary/<int:year>/<int:month>/', views.income_source_summary, name="income_source_summary"),
 ]

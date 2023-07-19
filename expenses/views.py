@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect   
 from django.contrib.auth.decorators import login_required
 from .models import Category, Expense
+from expenses.models import ExpenseBudget
 from django.contrib import messages
 from django.core.paginator import Paginator
 import json
@@ -25,7 +26,7 @@ class homeView(TemplateView):
 def index(request):
     categories = Category.objects.all()
     expenses = Expense.objects.filter(owner=request.user)
-    paginator = Paginator(expenses, 2)
+    paginator = Paginator(expenses, 5)
     page_number = request.GET.get('page')
     page_obj = Paginator.get_page(paginator,page_number)
     try:
@@ -134,36 +135,66 @@ def search_expenses(request):
         data = expenses.values()
         return JsonResponse(list(data), safe=False)
 
-def expense_category_summary(request):
-    todays_date = datetime.date.today()
-    six_months_ago = todays_date - datetime.timedelta(days = 30*6)
+def expense_category_summary(request, month, year):
+    year = int(year)
+    month = int(month)
+    # Calculate the start and end dates of the selected month
+    start_date = datetime.date(year, month, 1)
+    if month == 12:
+        end_date = datetime.date(year + 1, 1, 1)
+    else:
+        end_date = datetime.date(year, month + 1, 1)
 
-    expenses = Expense.objects.filter(owner=request.user, date__gte=six_months_ago, date__lte=todays_date)
+    
+    
+    expenses = Expense.objects.filter(owner=request.user, date__gte=start_date, date__lt=end_date)
 
+    
     finalrep = {}
+    category_list = list(set(expenses.values_list("category", flat=True)))  # Get distinct categories
+    
 
-    def get_cartegory(expense):
-        return expense.category
+    for category in category_list:
+        amount_spent = expenses.filter(category=category).aggregate(Sum("amount"))["amount__sum"] or 0
+        budget = ExpenseBudget.objects.filter(owner=request.user, category=category, month=month, year=year).first()
+        budget_amount = budget.amount if budget else 0
 
-    category_list = list(set(map(get_cartegory, expenses)))
+        finalrep[category] = {
+            "amount_spent": amount_spent,
+            "budget": budget_amount,
+        }
+    # def get_cartegory(expense):
+    #     return expense.category
 
-    def get_category_amount(category):
-        amount = 0
-        filtered_by_category = expenses.filter(category=category)
+    # category_list = list(set(map(get_cartegory, expenses)))
 
-        for item in filtered_by_category:
-            amount += item.amount
-        return amount
+    # def get_category_amount(category):
+    #     amount = 0
+    #     filtered_by_category = expenses.filter(category=category)
 
-    for i in expenses:
-        for j in category_list:
-            finalrep[j] = get_category_amount(j)
+    #     for item in filtered_by_category:
+    #         amount += item.amount
+    #     return amount
+
+    # for i in expenses:
+    #     for j in category_list:
+    #         finalrep[j] = get_category_amount(j)
+        
+    # print(finalrep)
 
     return JsonResponse({"expense_category_data":finalrep}, safe=False)
 
 
 def stats_view(request):
-    return render(request, 'expenses/stats.html')
+    expenses = Expense.objects.filter(owner = request.user)
+    total_income = expenses.aggregate(Sum('amount'))
+
+    year_range = range(2000, 2100)
+    context = {
+        "total_expense": total_income,
+        "year_range": year_range
+    }
+    return render(request, 'expenses/stats.html', context)
 
 
 def export_csv(request):
@@ -180,7 +211,7 @@ def export_csv(request):
 
 def export_excel(request):
     response = HttpResponse(content_type = 'application/ms-excel')
-    response['Content-Disposition'] = 'inline; attachment; filename=Expenses'+ str(datetime.datetime.now()) + '.xls'
+    response['Content-Disposition'] = 'attachment; filename=Expenses'+ str(datetime.datetime.now()) + '.xls'
 
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet('Expenses')
