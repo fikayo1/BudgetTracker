@@ -139,3 +139,85 @@ footer {
 footer p {
     margin: 0;
 }
+.menu-button{
+    display: none;
+}
+.nav-links {
+    display: flex;
+}
+
+
+/* Media Queries for Responsive Layout */
+@media only screen and (max-width: 768px) {
+    /* Adjust the padding in hero section for smaller screens */
+    .hero {
+        padding: 50px 15px;
+    }
+
+    /* Reduce font size for h1 and p in hero section */
+    .hero h1 {
+        font-size: 20px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    /* Make features section display as a single column for smaller screens */
+    .features {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+
+    /* Reduce width of feature items for smaller screens */
+    .feature {
+        width: 80%; /* You can adjust this value as needed */
+        margin: 20px 0;
+    }
+
+    .navbar-right {
+        position: relative;
+    }
+
+    .menu-button {
+        display: block;
+        font-size: 20px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* Display the nav links as a dropdown menu when menu button is clicked */
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: rgb(59, 59, 59);
+        padding: 10px;
+        z-index: 1;
+    }
+
+    .navbar-right ul {
+        padding: 10px;
+        border-radius: 8px;
+    }
+     /* Show the dropdown menu when menu button is clicked */
+     .show .nav-links {
+        display: flex;
+    }
+
+    /* Style the dropdown menu links */
+    .nav-links li {
+        margin-bottom: 10px;
+    }
+
+    .nav-links li a {
+        color: #fff;
+        text-decoration: none;
+    }
+}
+

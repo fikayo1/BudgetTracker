@@ -3,6 +3,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BudgetTracker - Personal Finance Management</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
@@ -16,10 +19,10 @@
                 <h1>BudgetTracker</h1>
             </div>
             <div class="navbar-right">
-                <ul>
+                <button class="menu-button">&#9776;</button>
+                <ul class="nav-links">
                     <li><a href="">Home</a></li>
                     <li><a href="#features">Features</a></li>
-                    
                     <li><a href="{% url 'login' %}">Sign In</a></li>
                     <li><a href="{% url 'register' %}">Sign Up</a></li>
                 </ul>
@@ -58,4 +61,26 @@
         <p>&copy; 2023 BudgetTracker. All rights reserved.</p>
     </footer>
 </body>
+<script>
+    // Function to toggle the display of the dropdown menu
+    function toggleMenu() {
+      const navLinks = document.querySelector(".nav-links");
+      navLinks.style.display = navLinks.style.display === "flex" ? "none" : "flex";
+    }
+    
+    // Function to close the dropdown menu when clicking outside of it
+    function hideMenuOnClickOutside(event) {
+      const navLinks = document.querySelector(".nav-links");
+      const menuButton = document.querySelector(".menu-button");
+      if (!navLinks.contains(event.target) && !menuButton.contains(event.target)) {
+        navLinks.style.display = "flex";
+      }
+    }
+    
+    // Attach a click event listener to the menu button to toggle the dropdown
+    document.querySelector(".menu-button").addEventListener("click", toggleMenu);
+    
+    // Attach a click event listener to the entire document to hide the dropdown when clicking outside of it
+    document.addEventListener("click", hideMenuOnClickOutside);
+    </script>
 </html>
